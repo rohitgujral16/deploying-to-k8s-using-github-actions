@@ -5,7 +5,7 @@ on:
     - 'main'
 jobs:
   build-and-push-to-registry:
-    name: Build and Push to repo
+    name: Build and Push to repo test
     runs-on: ubuntu-latest
     steps:
       - name: Check our repository
