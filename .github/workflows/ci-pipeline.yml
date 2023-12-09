@@ -28,6 +28,12 @@ jobs:
         run: |
           docker build -f Dockerfile -t rohitvuclip/${{ github.event.repository.name }}:${{ steps.commit_hash.outputs.hash }} .
           docker push rohitvuclip/${{ github.event.repository.name }}:${{ steps.commit_hash.outputs.hash }}
+
+      - name: Store Commit ID as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: commit-id
+          path: commit-id.txt
           
       # - name: Run Tests in Docker Container
       #   run: docker run -i --rm rohitvuclip/${{ github.event.repository.name }}:${{ steps.commit_hash.outputs.hash }} echo "hello"
