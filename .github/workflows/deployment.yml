@@ -17,11 +17,16 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: commit-id
+          path: commit-id.txt
 
-      - name: Read Commit ID from Artifact
+      - name: Verify Commit ID file
         run: |
-          COMMIT_ID=$(cat commit-id.txt)
-          echo "Using commit ID: $COMMIT_ID"
+          ls commit-id.txt 
+
+#      - name: Read Commit ID from Artifact
+#        run: |
+#          COMMIT_ID=$(cat commit-id.txt)
+#          echo "Using commit ID: $COMMIT_ID"
 
 #      - name: Set up Kubectl
 #        uses: azure/setup-kubectl@v1
