@@ -11,7 +11,7 @@ jobs:
       - name: Check our repository
         uses: actions/checkout@v3
 
-      - name: testing
+      - name: testing ruby
         run: echo "This is test" #ruby test
 
       - name: Login to Docker hub
