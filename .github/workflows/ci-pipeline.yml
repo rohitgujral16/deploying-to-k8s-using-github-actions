@@ -2,7 +2,7 @@ name: Ruby CI pipeline
 on:
   push:
     branches:
-    - 'master'
+    - 'main'
 jobs:
   build-and-push-to-registry:
     name: Build and Push to repo
