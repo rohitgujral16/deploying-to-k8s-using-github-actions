@@ -7,7 +7,7 @@ on:
 jobs:
   read_tag:
     name: "Reading tag from CI"
-    uses: ./.github/workflowsci-pipeline.yml
+    uses: ./.github/workflows/ci-pipeline.yml
 
   deploy_development:
     needs: read_tag
