@@ -4,9 +4,9 @@ on:
     outputs:
       commit_id:
         value: ${{ jobs.build-and-push-to-registry.outputs.commit_id }}
-  pull_request:
-    branches:
-    - 'main'
+#  pull_request:
+#    branches:
+#    - 'main'
 jobs:
   build-and-push-to-registry:
     name: Build and Push to repo
