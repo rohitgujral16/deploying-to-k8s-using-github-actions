@@ -5,12 +5,21 @@ on:
       - 'main'
       - 'production'
 jobs:
+  read_tag:
+    name: "Reading tag from CI"
+    uses: ./.github/workflowsci-pipeline.yml
+
   deploy_development:
+    needs: read_tag
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment: development
 
     steps:
+      - name: Printing value
+        env:
+          COMMIT_ID: ${{ needs.read_tag.outputs.commit_id }}
+        run: echo "vale read is ${{ needs.read_tag.outputs.commit_id }}"
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Download Commit ID Artifact
@@ -36,12 +45,15 @@ jobs:
 
       - name: Deploy to development
         if: github.ref == 'refs/heads/main'
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
         run: |
           #kubectl apply -f manifests/main.yaml
           echo "the tag will use $COMMIT_ID"
           
 
   deploy_production:
+    needs: read_tag
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/production'
     environment: production
@@ -67,6 +79,8 @@ jobs:
 #          version: 'latest'
 
       - name: Deploy to Production
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
         run: |
           #kubectl apply -f manifests/production.yaml
           echo "the tag will use $COMMIT_ID"
