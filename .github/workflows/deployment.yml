@@ -5,12 +5,21 @@ on:
       - 'main'
       - 'production'
 jobs:
+  read_tag:
+    name: "Reading tag from CI"
+    uses: ./.github/workflows/ci-pipeline.yml
+
   deploy_development:
+    needs: read_tag
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment: development
 
     steps:
+      - name: Printing value
+        env:
+          COMMIT_ID: ${{ needs.read_tag.outputs.commit_id }}
+        run: echo "vale read is ${{ needs.read_tag.outputs.commit_id }}"
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Set up Kubectl
@@ -24,9 +33,12 @@ jobs:
         env:
           DB_USER: ${{ secrets.DB_USER }}
         run: |
-          kubectl apply -f manifests/main.yaml
+          #kubectl apply -f manifests/main.yaml
+          echo "the tag will use $COMMIT_ID"
+          
 
   deploy_production:
+    needs: read_tag
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/production'
     environment: production
