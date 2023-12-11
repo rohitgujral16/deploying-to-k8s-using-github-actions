@@ -21,6 +21,8 @@ jobs:
 
       - name: Deploy to development
         if: github.ref == 'refs/heads/main'
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
         run: |
           kubectl apply -f manifests/main.yaml
 
@@ -40,5 +42,7 @@ jobs:
           version: 'latest'
 
       - name: Deploy to Production
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
         run: |
           kubectl apply -f manifests/production.yaml
