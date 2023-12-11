@@ -1,5 +1,9 @@
 name: Ruby CI pipeline
 on:
+  workflow_call:
+    outputs:
+      commit_id:
+        value: ${{ jobs.build-and-push-to-registry.outputs.commit_id }}
   pull_request:
     branches:
     - 'main'
