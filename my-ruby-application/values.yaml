@@ -2,10 +2,10 @@
 replicaCount: 2
 
 image:
-  repository: rohitvuclip/ruby
+  repository: rohitvuclip/deploying-to-k8s-using-github-actions
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v3"
+  tag: 16d1e6d
 
 imagePullSecrets: []
 nameOverride: ""

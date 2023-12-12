@@ -69,8 +69,8 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           COMMIT_ID: ${{ needs.build-and-push-to-registry.outputs.commit_id }}
         run: |
-          kubectl get pods -A
-          echo "value read is $COMMIT_ID"
+          echo "Updating tag to $COMMIT_ID"
+          helm upgrade --install ruby-app my-ruby-application --set image.tag=$COMMIT_ID
         
 
   deploy_production:
