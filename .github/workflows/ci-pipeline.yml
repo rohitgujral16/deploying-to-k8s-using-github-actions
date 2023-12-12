@@ -2,7 +2,7 @@ name: Ruby CI pipeline
 on:
   push:
     branches:
-    - 'kube-set'
+    - 'feature/*'
     - 'main'
 jobs:
   build-and-push-to-registry:
@@ -44,7 +44,7 @@ jobs:
   deploy_development:
     needs: build-and-push-to-registry
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/kube-set'
+    if: startsWith(github.ref, 'refs/heads/feature/')
     environment: development
 
     steps:
@@ -53,7 +53,6 @@ jobs:
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v1
         with:
-          #kubeconfig: ${{ secrets.KUBE_CONFIG }}
           version: 'latest'
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -63,7 +62,6 @@ jobs:
           aws-region: us-east-1
       - name: Configure kubectl for EKS
         run: aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
-
       - name: Deploy
         env:
           DB_USER: ${{ secrets.DB_USER }}
@@ -82,20 +80,25 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v1
         with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
           version: 'latest'
-
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Configure kubectl for EKS
+        run: aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
       - name: Deploy to Production
         env:
           DB_USER: ${{ secrets.DB_USER }}
           COMMIT_ID: ${{ needs.build-and-push-to-registry.outputs.commit_id }}
         run: |
-          #kubectl apply -f manifests/production.yaml
-          echo "value read is $COMMIT_ID"
+          echo "Updating tag to $COMMIT_ID"
+          helm upgrade --install ruby-app my-ruby-application --set image.tag=$COMMIT_ID
 
     
       
