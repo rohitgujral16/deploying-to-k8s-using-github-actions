@@ -2,7 +2,7 @@ name: Ruby CI pipeline
 on:
   push:
     branches:
-    - 'branch-test'
+    - 'kube-set'
     - 'main'
 jobs:
   build-and-push-to-registry:
@@ -38,13 +38,13 @@ jobs:
           name: commit-id
           path: commit-id.txt
           
-      # - name: Run Tests in Docker Container
+      # - name: Run Tests in Docker Containers
       #   run: docker run -i --rm rohitvuclip/${{ github.event.repository.name }}:${{ steps.commit_hash.outputs.hash }} echo "hello"
 
   deploy_development:
     needs: build-and-push-to-registry
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/branch-test'
+    if: github.ref == 'refs/heads/kube-set'
     environment: development
 
     steps:
@@ -53,15 +53,23 @@ jobs:
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v1
         with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          #kubeconfig: ${{ secrets.KUBE_CONFIG }}
           version: 'latest'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Configure kubectl for EKS
+        run: aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
 
       - name: Deploy
         env:
           DB_USER: ${{ secrets.DB_USER }}
           COMMIT_ID: ${{ needs.build-and-push-to-registry.outputs.commit_id }}
         run: |
-          #kubectl apply -f manifests/main.yaml
+          kubectl get pods -A
           echo "value read is $COMMIT_ID"
         
 
